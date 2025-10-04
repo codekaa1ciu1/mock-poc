@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Create Mapping - Mock Server{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h1>Create New Mock Mapping</h1>
+    <a href="{{ url_for('user_dashboard') }}" class="btn btn-secondary">← Back to Dashboard</a>
+</div>
+
+<div class="card">
+    <form method="POST">
+        <div class="form-group">
+            <label for="name">Mapping Name *</label>
+            <input type="text" id="name" name="name" required placeholder="e.g., Get User API">
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1rem;">
+            <div class="form-group">
+                <label for="request_method">HTTP Method *</label>
+                <select id="request_method" name="request_method" required>
+                    <option value="GET">GET</option>
+                    <option value="POST">POST</option>
+                    <option value="PUT">PUT</option>
+                    <option value="PATCH">PATCH</option>
+                    <option value="DELETE">DELETE</option>
+                    <option value="HEAD">HEAD</option>
+                    <option value="OPTIONS">OPTIONS</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="request_url">Request URL Path *</label>
+                <input type="text" id="request_url" name="request_url" required 
+                       placeholder="/api/users/123">
+            </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+                <label for="response_status">Response Status Code</label>
+                <input type="number" id="response_status" name="response_status" 
+                       value="200" min="100" max="599">
+            </div>
+            
+            <div class="form-group">
+                <label for="priority">Priority (higher = first)</label>
+                <input type="number" id="priority" name="priority" value="5" min="1" max="10">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="response_body">Response Body</label>
+            <textarea id="response_body" name="response_body" 
+                      placeholder='{"status": "success", "data": {...}}'></textarea>
+            <small style="color: #666;">Can be JSON, XML, plain text, etc.</small>
+        </div>
+        
+        <div class="form-group">
+            <label for="response_headers">Response Headers (JSON format)</label>
+            <textarea id="response_headers" name="response_headers" 
+                      placeholder='{"Content-Type": "application/json"}'></textarea>
+            <small style="color: #666;">Enter headers in JSON format, e.g., {"Content-Type": "application/json"}</small>
+        </div>
+        
+        <div style="display: flex; gap: 1rem;">
+            <button type="submit" class="btn btn-success">Create Mapping</button>
+            <a href="{{ url_for('user_dashboard') }}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<div class="card" style="background-color: #f8f9fa;">
+    <h3>💡 Tips</h3>
+    <ul style="margin-left: 1.5rem;">
+        <li>URL paths should start with / (e.g., /api/users)</li>
+        <li>Higher priority mappings are matched first (10 is highest)</li>
+        <li>Response headers must be valid JSON format</li>
+        <li>Mappings are automatically synced to WireMock when created</li>
+    </ul>
+</div>
+{% endblock %}
