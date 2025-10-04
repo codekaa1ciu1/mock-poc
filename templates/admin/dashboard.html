@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Mock Server{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom: 2rem;">Admin Dashboard</h1>
+
+<!-- WireMock Status Card -->
+<div class="card">
+    <h2>WireMock Server Status</h2>
+    <div style="display: flex; align-items: center; gap: 1rem;">
+        <span class="status-indicator {% if wiremock_status %}status-online{% else %}status-offline{% endif %}"></span>
+        <span style="font-weight: 500;">
+            {% if wiremock_status %}
+            Connected
+            {% else %}
+            Not Connected
+            {% endif %}
+        </span>
+        <form method="POST" action="{{ url_for('admin_sync_wiremock') }}" style="margin-left: auto;">
+            <button type="submit" class="btn btn-success" {% if not wiremock_status %}disabled{% endif %}>
+                🔄 Sync All Mappings to WireMock
+            </button>
+        </form>
+    </div>
+    {% if not wiremock_status %}
+    <p style="margin-top: 1rem; color: #e74c3c;">
+        ⚠️ WireMock server is not reachable. Please ensure it's running at the configured URL.
+    </p>
+    {% endif %}
+</div>
+
+<!-- User Management Card -->
+<div class="card">
+    <h2>User Management</h2>
+    
+    <!-- Create User Form -->
+    <details style="margin-bottom: 1rem;">
+        <summary style="cursor: pointer; padding: 0.5rem; background-color: #f8f9fa; border-radius: 4px; font-weight: 500;">
+            ➕ Create New User
+        </summary>
+        <form method="POST" action="{{ url_for('admin_create_user') }}" style="margin-top: 1rem; padding: 1rem; border: 1px solid #ddd; border-radius: 4px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr auto auto; gap: 1rem; align-items: end;">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem;">
+                        <input type="checkbox" name="is_admin">
+                        Admin
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn btn-success">Create</button>
+            </div>
+        </form>
+    </details>
+    
+    <!-- Users Table -->
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Created At</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+                <td>
+                    {% if user.is_admin %}
+                    <span class="badge badge-warning">Admin</span>
+                    {% else %}
+                    <span class="badge badge-info">User</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if user.is_active %}
+                    <span class="badge badge-success">Active</span>
+                    {% else %}
+                    <span class="badge badge-danger">Inactive</span>
+                    {% endif %}
+                </td>
+                <td>{{ user.created_at }}</td>
+                <td>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <form method="POST" action="{{ url_for('admin_toggle_user_admin', user_id=user.id) }}" style="display: inline;">
+                            <button type="submit" class="btn btn-secondary btn-small">
+                                {% if user.is_admin %}Remove Admin{% else %}Make Admin{% endif %}
+                            </button>
+                        </form>
+                        
+                        <form method="POST" action="{{ url_for('admin_toggle_user_active', user_id=user.id) }}" style="display: inline;">
+                            <button type="submit" class="btn btn-secondary btn-small">
+                                {% if user.is_active %}Deactivate{% else %}Activate{% endif %}
+                            </button>
+                        </form>
+                        
+                        {% if user.id != session.user_id %}
+                        <form method="POST" action="{{ url_for('admin_delete_user', user_id=user.id) }}" 
+                              onsubmit="return confirm('Are you sure you want to delete user {{ user.username }}?');" 
+                              style="display: inline;">
+                            <button type="submit" class="btn btn-danger btn-small">Delete</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

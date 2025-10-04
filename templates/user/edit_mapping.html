@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Mapping - Mock Server{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h1>Edit Mock Mapping</h1>
+    <a href="{{ url_for('user_dashboard') }}" class="btn btn-secondary">← Back to Dashboard</a>
+</div>
+
+<div class="card">
+    <form method="POST">
+        <div class="form-group">
+            <label for="name">Mapping Name *</label>
+            <input type="text" id="name" name="name" required value="{{ mapping.name }}">
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1rem;">
+            <div class="form-group">
+                <label for="request_method">HTTP Method *</label>
+                <select id="request_method" name="request_method" required>
+                    <option value="GET" {% if mapping.request_method == 'GET' %}selected{% endif %}>GET</option>
+                    <option value="POST" {% if mapping.request_method == 'POST' %}selected{% endif %}>POST</option>
+                    <option value="PUT" {% if mapping.request_method == 'PUT' %}selected{% endif %}>PUT</option>
+                    <option value="PATCH" {% if mapping.request_method == 'PATCH' %}selected{% endif %}>PATCH</option>
+                    <option value="DELETE" {% if mapping.request_method == 'DELETE' %}selected{% endif %}>DELETE</option>
+                    <option value="HEAD" {% if mapping.request_method == 'HEAD' %}selected{% endif %}>HEAD</option>
+                    <option value="OPTIONS" {% if mapping.request_method == 'OPTIONS' %}selected{% endif %}>OPTIONS</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="request_url">Request URL Path *</label>
+                <input type="text" id="request_url" name="request_url" required 
+                       value="{{ mapping.request_url }}">
+            </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+                <label for="response_status">Response Status Code</label>
+                <input type="number" id="response_status" name="response_status" 
+                       value="{{ mapping.response_status }}" min="100" max="599">
+            </div>
+            
+            <div class="form-group">
+                <label for="priority">Priority (higher = first)</label>
+                <input type="number" id="priority" name="priority" 
+                       value="{{ mapping.priority }}" min="1" max="10">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="response_body">Response Body</label>
+            <textarea id="response_body" name="response_body">{{ mapping.response_body }}</textarea>
+        </div>
+        
+        <div class="form-group">
+            <label for="response_headers">Response Headers (JSON format)</label>
+            <textarea id="response_headers" name="response_headers">{{ mapping.response_headers }}</textarea>
+            <small style="color: #666;">Enter headers in JSON format, e.g., {"Content-Type": "application/json"}</small>
+        </div>
+        
+        <div style="display: flex; gap: 1rem;">
+            <button type="submit" class="btn btn-success">Update Mapping</button>
+            <a href="{{ url_for('user_dashboard') }}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
